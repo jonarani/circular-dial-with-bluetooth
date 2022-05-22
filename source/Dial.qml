@@ -5,6 +5,9 @@ Item {
     property int main_back_width: main_back.width * _scale
     property int main_back_height: main_back.height * _scale
 
+    property int rotation: arrow.rotation
+
+
     Image {
         id: background
         scale: 1
@@ -19,7 +22,8 @@ Item {
         source: "dial/images/mainBack.png"
         scale: _scale
         anchors {
-            centerIn: parent
+            horizontalCenter: background.horizontalCenter
+            top: background.top
         }
     }
 
@@ -28,7 +32,7 @@ Item {
         source: "dial/images/mainFront.png"
         scale: _scale
         anchors {
-            centerIn: parent
+            centerIn: green_circle
         }
     }
 
@@ -37,7 +41,8 @@ Item {
         source: "dial/images/circular-dial.png"
         scale: _scale
         anchors {
-            centerIn: parent
+            horizontalCenter: background.horizontalCenter
+            top: background.top
         }
     }
 
@@ -47,7 +52,7 @@ Item {
         scale: _scale
         z: 1
         anchors {
-            centerIn: parent
+            centerIn: green_circle
         }
     }
 

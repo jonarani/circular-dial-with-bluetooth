@@ -1,39 +1,65 @@
 import QtQuick 2.14
 import QtQuick.Window 2.14
+import QtQuick.Layouts 1.15
+import QtQuick.Controls 2.15
 
 Window {
     id: root
-    width: dial.main_back_width
-    height: 700
+    width: 1000
+    height: 1000
     visible: true
 
-    // TODO: Vertical top half consists of dial
-    //       Vertical bottom half consists of options and configurations
+    minimumWidth: dial.main_back_width
 
+    ColumnLayout {
+        anchors.fill: parent
+        anchors.margins: 3
 
-    Dial {
-        id: dial
-        width: main_back_width
-        height: main_back_height
-        anchors {
-            top: parent.top
-            left: parent.left
-            right: parent.right
-            bottom: rec.top
+        spacing: 5
+
+        Dial {
+            id: dial
+            width: main_back_width
+            height: main_back_height
+            clip: true
+
+            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignTop | Qt.AlignLeft
+        }
+
+        Rectangle {
+            color: "lightgray"
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+
+            GridLayout {
+                id: grid
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                anchors.fill: parent
+                columns: 2
+
+                ColumnLayout
+                {
+                    Layout.alignment: Qt.AlignTop
+                    Button {
+                        Layout.fillWidth: true
+                        id: searchButton
+                        text: "Search devices"
+                    }
+                }
+
+//                TextField {
+//                    id: text
+//                    Layout.alignment: Qt.AlignTop
+//                    Layout.fillWidth: true
+//                    //Layout.fillHeight: true
+//                    anchors.top: dial.bottom
+//                }
+            }
         }
     }
-
-    Rectangle {
-        id: rec
-        width: 100
-        height: 100
-        color: "red"
-
-        anchors {
-            top: dial.bottom
-            left: parent.left
-            right: parent.right
-            bottom: parent.bottom
-        }
-    }
+    onWidthChanged: console.log("Width " + width + " " + dial.width)
+    onHeightChanged: console.log("Height " + height + " " + dial.height)
 }
+
