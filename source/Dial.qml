@@ -7,7 +7,9 @@ Item {
 
     property int rotation: arrow.rotation // TODO: alias?
 
-
+    width: main_back_width
+    height: main_back_height
+    clip: true
 
     Image {
         id: background

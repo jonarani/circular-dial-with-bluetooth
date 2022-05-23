@@ -22,39 +22,31 @@ Window {
             Layout.alignment: Qt.AlignTop
             Dial {
                 id: dial
-                width: main_back_width
-                height: main_back_height
-                clip: true
-
                 Layout.fillWidth: true
             }
         }
 
         Rectangle {
-            Layout.alignment: Qt.AlignTop
+            id: configurationRoot
             color: "lightgray"
+
+            Layout.alignment: Qt.AlignTop
             Layout.fillWidth: true
             Layout.fillHeight: true
 
             GridLayout {
                 id: grid
-                Layout.fillWidth: true
-                Layout.fillHeight: true
                 anchors.fill: parent
                 columns: 1
 
                 ColumnLayout
                 {
-                    Layout.rowSpan: 2
                     Layout.alignment: Qt.AlignTop
-                    Layout.fillWidth: true
 
                     Button {
                         id: searchButton
                         Layout.fillWidth: true
                         text: "Search devices"
-
-                        onPressed: console.log ("Pressed")
                     }
 
                     Row {
@@ -62,11 +54,9 @@ Window {
                         height: 150
                         ScrollView {
                             anchors.fill: parent
-                            Layout.fillHeight: true
-                            Layout.rowSpan: 2
                             ScrollBar.vertical.policy: ScrollBar.AlwaysOn
                             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-                            clip:true
+                            clip: true
 
                             ListView {
                                 model: 20
@@ -75,6 +65,12 @@ Window {
                                 }
                             }
                         }
+                    }
+
+                    Button {
+                        id: test
+                        Layout.fillWidth: true
+                        text: "Search devices"
                     }
                 }
             }
