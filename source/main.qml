@@ -9,25 +9,29 @@ Window {
     height: 1000
     visible: true
 
-    minimumWidth: dial.main_back_width
+    //minimumWidth: dial.main_back_width
 
     ColumnLayout {
+        id: mainLayout
         anchors.fill: parent
         anchors.margins: 3
-
         spacing: 5
 
-        Dial {
-            id: dial
-            width: main_back_width
-            height: main_back_height
-            clip: true
+        RowLayout {
+            id: dialLayout
+            Layout.alignment: Qt.AlignTop
+            Dial {
+                id: dial
+                width: main_back_width
+                height: main_back_height
+                clip: true
 
-            Layout.fillWidth: true
-            Layout.alignment: Qt.AlignTop | Qt.AlignLeft
+                Layout.fillWidth: true
+            }
         }
 
         Rectangle {
+            Layout.alignment: Qt.AlignTop
             color: "lightgray"
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -37,27 +41,45 @@ Window {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 anchors.fill: parent
-                columns: 2
+                columns: 1
 
                 ColumnLayout
                 {
+                    Layout.rowSpan: 2
                     Layout.alignment: Qt.AlignTop
+                    Layout.fillWidth: true
+
                     Button {
-                        Layout.fillWidth: true
                         id: searchButton
+                        Layout.fillWidth: true
                         text: "Search devices"
+
+                        onPressed: console.log ("Pressed")
+                    }
+
+                    Row {
+                        Layout.fillWidth: true
+                        height: 150
+                        ScrollView {
+                            anchors.fill: parent
+                            Layout.fillHeight: true
+                            Layout.rowSpan: 2
+                            ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+                            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+                            clip:true
+
+                            ListView {
+                                model: 20
+                                delegate: ItemDelegate {
+                                    text: "Item " + index
+                                }
+                            }
+                        }
                     }
                 }
-
-//                TextField {
-//                    id: text
-//                    Layout.alignment: Qt.AlignTop
-//                    Layout.fillWidth: true
-//                    //Layout.fillHeight: true
-//                    anchors.top: dial.bottom
-//                }
             }
         }
+
     }
     onWidthChanged: console.log("Width " + width + " " + dial.width)
     onHeightChanged: console.log("Height " + height + " " + dial.height)

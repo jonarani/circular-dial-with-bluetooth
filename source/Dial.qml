@@ -1,11 +1,12 @@
 import QtQuick 2.0
 
 Item {
-    property real _scale: 1
+    property real _scale: 1.0
     property int main_back_width: main_back.width * _scale
     property int main_back_height: main_back.height * _scale
 
-    property int rotation: arrow.rotation
+    property int rotation: arrow.rotation // TODO: alias?
+
 
 
     Image {
