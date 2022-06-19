@@ -5,9 +5,9 @@ BtDeviceList::BtDeviceList(QObject *parent)
     : QObject{parent}
 {
     // Test data for the list view
-//    m_foundDevices.append({QString("name 1"), QString("addr 1")});
-//    m_foundDevices.append({QString("name 2"), QString("addr 2")});
-//    m_foundDevices.append({QString("name 3"), QString("addr 3")});
+    m_foundDevices.append({QString("name 1"), QString("addr 1")});
+    m_foundDevices.append({QString("name 2"), QString("addr 2")});
+    m_foundDevices.append({QString("name 3"), QString("addr 3")});
 }
 
 QVector<DeviceItem> BtDeviceList::foundDevices() const
@@ -29,6 +29,14 @@ bool BtDeviceList::setItemAt(int index, const DeviceItem &item)
     m_foundDevices[index] = item;
 
     return true;
+}
+
+const QString BtDeviceList::getItemAddressAt(int index)
+{
+    if (index < 0 || index > m_foundDevices.size())
+        return QString("");
+
+    return m_foundDevices[index].address;
 }
 
 void BtDeviceList::appendItem(const QBluetoothDeviceInfo &device)

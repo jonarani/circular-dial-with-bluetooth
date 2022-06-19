@@ -4,24 +4,31 @@
 BtHandler::BtHandler(QObject *parent)
     : QObject{parent}
 {
-    discoveryAgent = new QBluetoothDeviceDiscoveryAgent(this);
+    m_discoveryAgent = new QBluetoothDeviceDiscoveryAgent(this);
 
-    connect(discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
+    connect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
             this, &BtHandler::newDeviceFound);
 
-    connect(discoveryAgent, &QBluetoothDeviceDiscoveryAgent::finished,
+    connect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::finished,
             this, &BtHandler::searchFinished);
 }
 
 void BtHandler::searchBtDevices()
 {
-    if (discoveryAgent == nullptr){
+    setIsSearchFinished(false);
+
+    if (m_discoveryAgent == nullptr){
         qDebug() << "Error: discoveryAgent is nullptr";
         return;
     }
 
     qDebug() << "Started searching";
-    discoveryAgent->start();
+    m_discoveryAgent->start();
+}
+
+void BtHandler::connectToDevice(const QString &deviceAddress)
+{
+    qDebug() << "Connecting to..." << deviceAddress;
 }
 
 void BtHandler::newDeviceFound(const QBluetoothDeviceInfo &device)
@@ -36,4 +43,18 @@ void BtHandler::newDeviceFound(const QBluetoothDeviceInfo &device)
 void BtHandler::searchFinished()
 {
     qDebug() << "Finished searching.";
+    setIsSearchFinished(true);
+}
+
+bool BtHandler::isSearchFinished() const
+{
+    return m_isSearchFinished;
+}
+
+void BtHandler::setIsSearchFinished(bool newIsSearchFinished)
+{
+    if (m_isSearchFinished == newIsSearchFinished)
+        return;
+    m_isSearchFinished = newIsSearchFinished;
+    emit isSearchFinishedChanged();
 }

@@ -19,6 +19,8 @@ class BtDeviceList : public QObject
 public:
     explicit BtDeviceList(QObject *parent = nullptr);
 
+    Q_INVOKABLE const QString getItemAddressAt(int index);
+
     QVector<DeviceItem> foundDevices() const;
 
     // Necessary when want to modify the data

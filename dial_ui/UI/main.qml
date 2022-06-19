@@ -30,7 +30,6 @@ Window {
             onClicked: {
                 fillerItem.visible = false
                 devicesListView.visible = true;
-                connectButton.visible = true;
                 _btHandler.searchBtDevices();
             }
         }
@@ -45,8 +44,9 @@ Window {
         ListView {
             id: devicesListView
             visible: false
-            spacing: 5
+            spacing: 2
             clip: true
+            focus: true
 
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -56,10 +56,24 @@ Window {
                 list: _deviceList
             }
 
+
+            highlight: Rectangle {
+                z: 100
+                width: parent.width
+                color: "lightgreen"
+
+                border {
+                    color: "black"
+                    width: 2
+                }
+
+                opacity: 0.7
+            }
+
             delegate: Rectangle {
-                width: 40
-                height: 40
+                readonly property ListView __lv: ListView.view
                 color: "lightblue"
+                implicitHeight: txt.implicitHeight
 
                 anchors {
                     left: parent.left
@@ -67,9 +81,25 @@ Window {
                 }
 
                 Text {
-                    anchors.verticalCenter: parent.verticalCenter
+                    id: txt
+                    anchors {
+                        verticalCenter: parent.verticalCenter
+                        left: parent.left
+                        leftMargin: 7
+                    }
+
                     text: "%1\t\t%2".arg(model.name).arg(model.address)
                     font.pixelSize: 25
+                }
+
+                MouseArea {
+                    anchors {
+                        fill: parent
+                    }
+
+                    onClicked: {
+                        __lv.currentIndex = model.index
+                    }
                 }
             }
 
@@ -81,14 +111,15 @@ Window {
 
         Button {
             id: connectButton
-            visible: false
-            Layout.alignment: Qt.AlignBottom
+            visible: _btHandler.isSearchFinished
 
+            Layout.alignment: Qt.AlignBottom
             Layout.fillWidth: true
+
             text: "Connect"
 
             onClicked: {
-                //btHandler.connectToDevice();
+                _btHandler.connectToDevice(_deviceList.getItemAddressAt(devicesListView.currentIndex));
             }
         }
 
