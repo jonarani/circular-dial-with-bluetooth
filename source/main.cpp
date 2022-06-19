@@ -3,6 +3,7 @@
 #include <QQmlContext>
 
 #include "bthandler.h"
+#include "btdevicelist.h"
 #include "btdevicemodel.h"
 
 int main(int argc, char *argv[])
@@ -11,12 +12,21 @@ int main(int argc, char *argv[])
 
     QGuiApplication app(argc, argv);
 
-    BtDeviceModel btDeviceModel;
-    BtHandler btHandler(nullptr, &btDeviceModel);
+    qmlRegisterType<BtDeviceModel>("BtDevice", 1, 0, "BtDeviceModel");
+    // Can be used as property in qml model
+    qmlRegisterUncreatableType<BtDeviceList>("BtDevice", 1, 0, "BtDeviceList",
+                                             "BtDeviceList should not be created in QML");
+
+    BtHandler btHandler;
+    BtDeviceList deviceList;
+
+    QObject::connect(&btHandler, &BtHandler::deviceDiscovered, &deviceList, &BtDeviceList::appendItem);
+
     QQmlApplicationEngine engine;
 
+
     engine.rootContext()->setContextProperty("_btHandler", &btHandler);
-    engine.rootContext()->setContextProperty("_btDeviceModel", &btDeviceModel);
+    engine.rootContext()->setContextProperty("_deviceList", &deviceList);
 
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

@@ -3,6 +3,8 @@ import QtQuick.Window 2.14
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 
+import BtDevice 1.0
+
 Window {
     id: root
     width: 530
@@ -50,7 +52,9 @@ Window {
             Layout.fillHeight: true
             Layout.alignment: Qt.AlignTop
 
-            model: _btDeviceModel
+            model: BtDeviceModel {
+                list: _deviceList
+            }
 
             delegate: Rectangle {
                 width: 40

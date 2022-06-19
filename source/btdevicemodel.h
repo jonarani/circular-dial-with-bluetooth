@@ -2,40 +2,39 @@
 #define BTDEVICEMODEL_H
 
 #include <QAbstractListModel>
-#include <QObject>
-#include <QBluetoothDeviceInfo>
-#include <QBluetoothAddress>
+
+class BtDeviceList;
 
 class BtDeviceModel : public QAbstractListModel
 {
     Q_OBJECT
+    Q_PROPERTY(BtDeviceList *list READ list WRITE setList)
 public:
     explicit BtDeviceModel(QObject *parent = nullptr);
 
-    enum Roles {
+    enum {
         NameRole = Qt::UserRole,
         AddressRole,
     };
 
-    int rowCount(const QModelIndex& parent) const override;
-    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
-    QHash<int, QByteArray> roleNames() const override;
+    // Basic functionality:
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+
+    // Editable:
+    bool setData(const QModelIndex &index, const QVariant &value,
+                 int role = Qt::EditRole) override;
+
+    Qt::ItemFlags flags(const QModelIndex& index) const override;
+
+    virtual QHash<int, QByteArray> roleNames() const override;
+
+    BtDeviceList *list() const;
+    void setList(BtDeviceList *newList);
 
 private:
-    struct DeviceInfo {
-        DeviceInfo(){}
-        DeviceInfo(const QString &name, const QString &address)
-            : name(name), address(address){}
-        QString name;
-        QString address;
-    };
-
-    QVector<DeviceInfo> m_foundDevices;
-
-    void addFoundDevice(const QString &name, const QString &address);
-
-public slots:
-    void deviceDiscovered(const QBluetoothDeviceInfo &device);
+    BtDeviceList *m_list;
 };
 
 #endif // BTDEVICEMODEL_H

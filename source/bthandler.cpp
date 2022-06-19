@@ -1,17 +1,13 @@
 #include "bthandler.h"
 #include <QDebug>
 
-BtHandler::BtHandler(QObject *parent, BtDeviceModel *btDeviceModel)
+BtHandler::BtHandler(QObject *parent)
     : QObject{parent}
 {
     discoveryAgent = new QBluetoothDeviceDiscoveryAgent(this);
-    m_btDeviceModel = btDeviceModel;
 
     connect(discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
-            this, &BtHandler::deviceDiscovered);
-
-    connect(discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
-            btDeviceModel, &BtDeviceModel::deviceDiscovered);
+            this, &BtHandler::newDeviceFound);
 
     connect(discoveryAgent, &QBluetoothDeviceDiscoveryAgent::finished,
             this, &BtHandler::searchFinished);
@@ -28,12 +24,13 @@ void BtHandler::searchBtDevices()
     discoveryAgent->start();
 }
 
-void BtHandler::deviceDiscovered(const QBluetoothDeviceInfo &device)
+void BtHandler::newDeviceFound(const QBluetoothDeviceInfo &device)
 {
     qDebug() << device.name();
     qDebug() << device.address().toString();
     qDebug() << "";
-    m_foundDevices.append({device.name(), device.address().toString()});
+
+    emit deviceDiscovered(device);
 }
 
 void BtHandler::searchFinished()
