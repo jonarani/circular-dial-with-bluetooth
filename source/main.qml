@@ -5,79 +5,92 @@ import QtQuick.Controls 2.15
 
 Window {
     id: root
-    width: 1000
-    height: 1000
+    width: 530
+    height: 800
     visible: true
-
-    //minimumWidth: dial.main_back_width
 
     ColumnLayout {
         id: mainLayout
         anchors.fill: parent
-        anchors.margins: 3
         spacing: 5
 
-        RowLayout {
-            id: dialLayout
+        Dial {
+            id: dial
+            Layout.fillWidth: true
             Layout.alignment: Qt.AlignTop
-            Dial {
-                id: dial
-                Layout.fillWidth: true
+        }
+
+        Button {
+            id: searchButton
+            Layout.fillWidth: true
+            text: "Search devices"
+
+            onClicked: {
+                fillerItem.visible = false
+                devicesListView.visible = true;
+                connectButton.visible = true;
+                _btHandler.searchBtDevices();
             }
         }
 
-        Rectangle {
-            id: configurationRoot
-            color: "lightgray"
+        Item {
+            id: fillerItem
+            visible: true
+            Layout.fillHeight: true
+        }
 
-            Layout.alignment: Qt.AlignTop
+
+        ListView {
+            id: devicesListView
+            visible: false
+            spacing: 5
+            clip: true
+
             Layout.fillWidth: true
             Layout.fillHeight: true
+            Layout.alignment: Qt.AlignTop
 
-            GridLayout {
-                id: grid
-                anchors.fill: parent
-                columns: 1
+            model: _btDeviceModel
 
-                ColumnLayout
-                {
-                    Layout.alignment: Qt.AlignTop
+            delegate: Rectangle {
+                width: 40
+                height: 40
+                color: "lightblue"
 
-                    Button {
-                        id: searchButton
-                        Layout.fillWidth: true
-                        text: "Search devices"
-                    }
-
-                    Row {
-                        Layout.fillWidth: true
-                        height: 150
-                        ScrollView {
-                            anchors.fill: parent
-                            ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-                            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-                            clip: true
-
-                            ListView {
-                                model: 20
-                                delegate: ItemDelegate {
-                                    text: "Item " + index
-                                }
-                            }
-                        }
-                    }
-
-                    Button {
-                        id: test
-                        Layout.fillWidth: true
-                        text: "Search devices"
-                    }
+                anchors {
+                    left: parent.left
+                    right: parent.right
                 }
+
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "%1\t\t%2".arg(model.name).arg(model.address)
+                    font.pixelSize: 25
+                }
+            }
+
+            ScrollBar.vertical: ScrollBar {
+                active: true
+            }
+        }
+
+
+        Button {
+            id: connectButton
+            visible: false
+            Layout.alignment: Qt.AlignBottom
+
+            Layout.fillWidth: true
+            text: "Connect"
+
+            onClicked: {
+                //btHandler.connectToDevice();
             }
         }
 
     }
-    onWidthChanged: console.log("Width " + width + " " + dial.width)
-    onHeightChanged: console.log("Height " + height + " " + dial.height)
+
+    //onWidthChanged: console.log("Width " + width + " " + dial.width)
+    //onHeightChanged: console.log("Height " + height + " " + dial.height)
 }
 
