@@ -1,6 +1,9 @@
 import QtQuick 2.0
 
 Item {
+    id: dial
+    signal arrowRotationChanged(real rotation);
+
     property real _scale: 1.0
     property int main_back_width: main_back.width * _scale
     property int main_back_height: main_back.height * _scale
@@ -98,6 +101,10 @@ Item {
                 // Rotate in increments of <snap> degrees. Modulo 360 to keep rotation [0; 360).
                 parent.rotation = (parseInt((parent.rotation - degrees) / snap) * snap) % 360
                 console.log (parent.rotation)
+
+                // TODO: if prev rotation != rotation
+                dial.arrowRotationChanged(parent.rotation);
+                // TODO: update prev rotation
             }
         }
     }

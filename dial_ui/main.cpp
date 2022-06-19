@@ -17,6 +17,8 @@ int main(int argc, char *argv[])
     qmlRegisterUncreatableType<BtDeviceList>("BtDevice", 1, 0, "BtDeviceList",
                                              "BtDeviceList should not be created in QML");
 
+    qmlRegisterUncreatableType<BtHandler>("BtHandlerData", 1, 0, "BtStates", "Access to enums");
+
     BtHandler btHandler;
     BtDeviceList deviceList;
 
