@@ -16,7 +16,7 @@ Window {
         anchors.fill: parent
         spacing: 5
 
-        Dial {
+        Dial360 {
             id: dial
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignTop

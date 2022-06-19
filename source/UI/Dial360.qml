@@ -7,6 +7,8 @@ Item {
 
     property int rotation: arrow.rotation // TODO: alias?
 
+    property string imagesPath: "qrc:/UI/images/"
+
     width: main_back_width
     height: main_back_height - 90
     clip: true
@@ -14,7 +16,7 @@ Item {
     Image {
         id: background
         scale: 1
-        source: "dial/images/background.png"
+        source: imagesPath + "background.png"
         anchors {
             fill: parent
         }
@@ -22,7 +24,7 @@ Item {
 
     Image {
         id: main_back
-        source: "dial/images/mainBack.png"
+        source: imagesPath + "mainBack.png"
         scale: _scale
         anchors {
             horizontalCenter: background.horizontalCenter
@@ -32,7 +34,7 @@ Item {
 
     Image {
         id: main_front
-        source: "dial/images/mainFront.png"
+        source: imagesPath + "mainFront.png"
         scale: _scale
         anchors {
             centerIn: green_circle
@@ -41,7 +43,7 @@ Item {
 
     Image {
         id: green_circle
-        source: "dial/images/circular-dial.png"
+        source: imagesPath + "circular-dial.png"
         scale: _scale
         anchors {
             horizontalCenter: background.horizontalCenter
@@ -51,7 +53,7 @@ Item {
 
     Image {
         id: support
-        source: "dial/images/knob.png"
+        source: imagesPath + "knob.png"
         scale: _scale
         z: 1
         anchors {
@@ -61,7 +63,7 @@ Item {
 
     Image {
         id: arrow
-        source: "dial/images/arrow.png"
+        source: imagesPath + "arrow.png"
         scale: _scale
         x: support.x + support.width / 2 - arrow.width / 2
         y: support.y + support.height / 2 - arrow.height
