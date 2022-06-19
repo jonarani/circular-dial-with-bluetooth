@@ -2,9 +2,9 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
-#include "bthandler.h"
-#include "btdevicelist.h"
-#include "btdevicemodel.h"
+#include "bluetooth/bthandler.h"
+#include "bluetooth/btdevicelist.h"
+#include "bluetooth/btdevicemodel.h"
 
 int main(int argc, char *argv[])
 {
