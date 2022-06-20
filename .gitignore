@@ -87,3 +87,24 @@ compile_commands.json
 *_qmlcache.qrc
 
 .qtc_clangd
+
+
+# STM stuff
+
+# Misc
+*.map
+*.m
+*.png
+
+# Eclipse CDT project files
+.settings/
+
+# Vagrant directory
+.vagrant/
+
+# Include makefiles
+!Makefile
+*~
+
+# Libraries
+/lib
