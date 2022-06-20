@@ -79,6 +79,16 @@ void BtHandler::sendMessage(const qreal rotation)
     //m_socket->write(text);
 }
 
+void BtHandler::disconnect()
+{
+    qDebug() << "Trying to disconnect";
+    if (m_socket->disconnect())
+    {
+        qDebug() << "Succesfully disconnected";
+        setState(DISCONNECTED);
+    }
+}
+
 void BtHandler::readSocket()
 {
     if (m_socket == nullptr)
@@ -87,7 +97,7 @@ void BtHandler::readSocket()
     // Received data must be terminated with \r\n
     while (m_socket->canReadLine()) {
         QByteArray line = m_socket->readLine();
-
+        qDebug() << line;
     }
 }
 

@@ -29,6 +29,7 @@ public:
     Q_INVOKABLE void searchBtDevices();
     Q_INVOKABLE void connectToDevice(const QString &deviceAddress);
     Q_INVOKABLE void sendMessage(const qreal rotation);
+    Q_INVOKABLE void disconnect();
 
     bool isSearchFinished() const;
     void setIsSearchFinished(bool newIsSearchFinished);

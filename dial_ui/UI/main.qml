@@ -90,19 +90,27 @@ Window {
             delegate: Rectangle {
                 readonly property ListView __lv: ListView.view
                 color: "lightblue"
-                implicitHeight: txt.implicitHeight
+                implicitHeight: txt1.implicitHeight
                 width: __lv.width
 
-                Text {
-                    id: txt
-                    anchors {
-                        verticalCenter: parent.verticalCenter
-                        left: parent.left
-                        leftMargin: 7
-                    }
+                RowLayout {
+                    anchors.fill: parent
+                    Text {
+                        id: txt1
+                        Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                        Layout.leftMargin: 10
 
-                    text: "%1\t\t%2".arg(model.name).arg(model.address)
-                    font.pixelSize: 25
+                        text: "%1".arg(model.name)
+                        font.pixelSize: 25
+                    }
+                    Text {
+                        id: txt2
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        Layout.rightMargin: 10
+
+                        text: "%1".arg(model.address)
+                        font.pixelSize: 25
+                    }
                 }
 
                 MouseArea {
@@ -150,7 +158,7 @@ Window {
             enabled: _btHandler.state === BtStates.CONNECTED
 
             onClicked: {
-                _btHandler.connectToDevice(_deviceList.getItemAddressAt(devicesListView.currentIndex));
+                _btHandler.disconnect();
             }
         }
 
