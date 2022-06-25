@@ -17,6 +17,17 @@ BtHandler::BtHandler(QObject *parent)
 
     connect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::finished,
             this, &BtHandler::searchFinished);
+
+    // For testing purposes
+    //m_timer.setInterval(10);
+//    connect(&m_timer, &QTimer::timeout, this, [=](){
+//        sendReady = true;
+//        m_timer.stop();
+//        qDebug() << "Timer";
+//    });
+
+    //connect(&m_timer, &QTimer::timeout, this, &BtHandler::test_sendData);
+    //m_timer.start();
 }
 
 void BtHandler::searchBtDevices()
@@ -70,13 +81,20 @@ void BtHandler::searchFinished()
     setIsSearchFinished(true);
 }
 
-void BtHandler::sendMessage(const qreal rotation)
+void BtHandler::sendMessage(qreal rotation)
 {
-    QString message("Test message");
-    // TODO: convert rotation into QString
-    qDebug() << message;
-    //QByteArray text = message.toUtf8() + '\r' + '\n';
-    //m_socket->write(text);
+    if (rotation < 0.0)
+    {
+        rotation = 360.0 + rotation;
+    }
+
+    QString msg = QString::number(rotation, 'f', 1);
+    if (m_state == CONNECTED)
+    {
+        qDebug() << "Sending: " << msg;
+        QByteArray text = msg.toUtf8() + '\0' + '\r' + '\n';
+        m_socket->write(text);
+    }
 }
 
 void BtHandler::disconnect()
@@ -117,6 +135,24 @@ void BtHandler::socketErrorOccurred(QBluetoothSocket::SocketError error)
 {
     setState(ERROR_OCCURED);
     qDebug() << "Socket error: " << error;
+}
+
+void BtHandler::test_sendData()
+{
+    static qreal rotation = 100.0;
+
+    if (m_state == CONNECTED)
+    {
+        QString msg = QString::number(rotation, 'f', 1);
+        qDebug() << "Sending: " << msg;
+        // TODO: convert rotation into QString
+        QByteArray text = msg.toUtf8() + '\0' + '\r' + '\n';
+        m_socket->write(text);
+    }
+
+    rotation += 0.1;
+    if (rotation >= 360.0)
+        rotation = 100.0;
 }
 
 bool BtHandler::isSearchFinished() const

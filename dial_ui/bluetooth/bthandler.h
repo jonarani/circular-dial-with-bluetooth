@@ -6,6 +6,7 @@
 #include <QBluetoothAddress>
 #include <QBluetoothUuid>
 #include <QBluetoothSocket>
+#include <QTimer>
 
 class BtHandler : public QObject
 {
@@ -28,7 +29,7 @@ public:
 
     Q_INVOKABLE void searchBtDevices();
     Q_INVOKABLE void connectToDevice(const QString &deviceAddress);
-    Q_INVOKABLE void sendMessage(const qreal rotation);
+    Q_INVOKABLE void sendMessage(qreal rotation);
     Q_INVOKABLE void disconnect();
 
     bool isSearchFinished() const;
@@ -54,6 +55,9 @@ private slots:
     void disconnected();
     void socketErrorOccurred(QBluetoothSocket::SocketError error);
 
+    // For testing
+    void test_sendData();
+
 private:
     QBluetoothDeviceDiscoveryAgent *m_discoveryAgent = nullptr;
     QBluetoothSocket *m_socket = nullptr;
@@ -61,6 +65,12 @@ private:
     bool m_isSearchFinished = false;
 
     BtStates m_state;
+
+    // For testing
+    QTimer m_timer;
+
+    // For testing
+    bool sendReady = false;
 };
 
 #endif // BTHANDLER_H

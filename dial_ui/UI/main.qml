@@ -24,7 +24,7 @@ Window {
 
             onArrowRotationChanged: {
                 _btHandler.sendMessage(rotation)
-                console.log("Rotation Changed " + rotation)
+                //console.log("Rotation Changed " + rotation)
             }
         }
 
@@ -57,6 +57,7 @@ Window {
         // TODO: Add StackView
         // 1st screen - listview
         // 2nd screen - servo motor params (actual degrees)
+        // OR just use visibility to change from ListView to ServoMotorData screen or whatever
 
         ListView {
             id: devicesListView

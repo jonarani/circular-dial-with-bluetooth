@@ -8,7 +8,8 @@ Item {
     property int main_back_width: main_back.width * _scale
     property int main_back_height: main_back.height * _scale
 
-    property int rotation: arrow.rotation // TODO: alias?
+    property real rotation: arrow.rotation // TODO: alias?
+    property real prevRotation: 0.0;
 
     property string imagesPath: "qrc:/UI/images/"
 
@@ -100,11 +101,19 @@ Item {
             onPositionChanged: {
                 // Rotate in increments of <snap> degrees. Modulo 360 to keep rotation [0; 360).
                 parent.rotation = (parseInt((parent.rotation - degrees) / snap) * snap) % 360
-                console.log (parent.rotation)
+                //console.log (parent.rotation)
 
-                // TODO: if prev rotation != rotation
-                dial.arrowRotationChanged(parent.rotation);
-                // TODO: update prev rotation
+                if (prevRotation != parent.rotation)
+                {
+                    prevRotation = parent.rotation;
+                    dial.arrowRotationChanged(parent.rotation);
+                }
+
+                // TODO: create an arrow that keeps track of
+                //       degrees sent from MCU.
+                // Define a new Q_PROPERTY in bthandler
+                // Received degrees will use WRITE.
+                // In QML use READ.
             }
         }
     }
