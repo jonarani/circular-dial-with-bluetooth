@@ -19,14 +19,9 @@ BtHandler::BtHandler(QObject *parent)
             this, &BtHandler::searchFinished);
 
     // For testing purposes
-    //m_timer.setInterval(10);
-//    connect(&m_timer, &QTimer::timeout, this, [=](){
-//        sendReady = true;
-//        m_timer.stop();
-//        qDebug() << "Timer";
-//    });
+    m_timer.setInterval(50);
 
-    //connect(&m_timer, &QTimer::timeout, this, &BtHandler::test_sendData);
+    connect(&m_timer, &QTimer::timeout, this, &BtHandler::sendMessage);
     //m_timer.start();
 }
 
@@ -65,6 +60,19 @@ void BtHandler::connectToDevice(const QString &deviceAddress)
     m_socket->connectToService(address, uuid);
 }
 
+void BtHandler::addToQueue(qreal rotation)
+{
+    if (rotation < 0.0)
+    {
+        rotation = 360.0 + rotation;
+    }
+
+    m_rotations.push_back(rotation);
+
+    if (!m_timer.isActive())
+        m_timer.start();
+}
+
 void BtHandler::newDeviceFound(const QBluetoothDeviceInfo &device)
 {
     qDebug() << device.name();
@@ -81,19 +89,23 @@ void BtHandler::searchFinished()
     setIsSearchFinished(true);
 }
 
-void BtHandler::sendMessage(qreal rotation)
+void BtHandler::sendMessage()
 {
-    if (rotation < 0.0)
+    if (!m_rotations.empty())
     {
-        rotation = 360.0 + rotation;
+        if (m_state == CONNECTED)
+        {
+            qreal rotation = m_rotations.last();
+            QString msg = QString::number(rotation, 'f', 1);
+            qDebug() << "Sending: " << msg;
+            QByteArray text = msg.toUtf8() + '\0' + '\r' + '\n';
+            m_socket->write(text);
+            m_rotations.clear();
+        }
     }
-
-    QString msg = QString::number(rotation, 'f', 1);
-    if (m_state == CONNECTED)
+    else if (m_timer.isActive())
     {
-        qDebug() << "Sending: " << msg;
-        QByteArray text = msg.toUtf8() + '\0' + '\r' + '\n';
-        m_socket->write(text);
+        m_timer.stop();
     }
 }
 
@@ -139,20 +151,22 @@ void BtHandler::socketErrorOccurred(QBluetoothSocket::SocketError error)
 
 void BtHandler::test_sendData()
 {
-    static qreal rotation = 100.0;
-
-    if (m_state == CONNECTED)
+    if (!m_rotations.empty())
     {
-        QString msg = QString::number(rotation, 'f', 1);
-        qDebug() << "Sending: " << msg;
-        // TODO: convert rotation into QString
-        QByteArray text = msg.toUtf8() + '\0' + '\r' + '\n';
-        m_socket->write(text);
+        if (m_state == CONNECTED)
+        {
+            qreal rotation = m_rotations.last();
+            QString msg = QString::number(rotation, 'f', 1);
+            qDebug() << "Sending: " << msg;
+            QByteArray text = msg.toUtf8() + '\0' + '\r' + '\n';
+            m_socket->write(text);
+            m_rotations.clear();
+        }
     }
-
-    rotation += 0.1;
-    if (rotation >= 360.0)
-        rotation = 100.0;
+    else if (m_timer.isActive())
+    {
+        m_timer.stop();
+    }
 }
 
 bool BtHandler::isSearchFinished() const

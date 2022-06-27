@@ -29,7 +29,7 @@ public:
 
     Q_INVOKABLE void searchBtDevices();
     Q_INVOKABLE void connectToDevice(const QString &deviceAddress);
-    Q_INVOKABLE void sendMessage(qreal rotation);
+    Q_INVOKABLE void addToQueue(qreal rotation);
     Q_INVOKABLE void disconnect();
 
     bool isSearchFinished() const;
@@ -54,6 +54,7 @@ private slots:
     void connected();
     void disconnected();
     void socketErrorOccurred(QBluetoothSocket::SocketError error);
+    void sendMessage();
 
     // For testing
     void test_sendData();
@@ -65,6 +66,8 @@ private:
     bool m_isSearchFinished = false;
 
     BtStates m_state;
+
+    QVector<qreal> m_rotations;
 
     // For testing
     QTimer m_timer;

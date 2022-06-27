@@ -23,7 +23,7 @@ Window {
             Layout.alignment: Qt.AlignTop
 
             onArrowRotationChanged: {
-                _btHandler.sendMessage(rotation)
+                _btHandler.addToQueue(rotation)
                 //console.log("Rotation Changed " + rotation)
             }
         }
