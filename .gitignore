@@ -99,6 +99,8 @@ compile_commands.json
 # Eclipse CDT project files
 .settings/
 
+/Debug/
+
 # Vagrant directory
 .vagrant/
 
