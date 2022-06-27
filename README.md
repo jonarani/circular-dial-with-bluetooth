@@ -11,3 +11,9 @@ https://doc.qt.io/qt-5/qtbluetooth-module.html
 
 https://doc.qt.io/qt-5/qtbluetooth-overview.html
 
+
+https://content.instructables.com/ORIG/FOR/4FP2/HKZAVRT6/FOR4FP2HKZAVRT6.pdf
+
+https://www.robotshop.com/media/files/pdf/datasheet-1182.pdf
+
+https://lastminuteengineers.com/a4988-stepper-motor-driver-arduino-tutorial/
