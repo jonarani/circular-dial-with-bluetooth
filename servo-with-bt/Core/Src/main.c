@@ -49,15 +49,20 @@ UART_HandleTypeDef huart6;
 osThreadId_t servoControlTaskHandle;
 const osThreadAttr_t servoControlTask_attributes = {
   .name = "servoControlTask",
-  .stack_size = 128 * 4,
+  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for uartPollTask */
 osThreadId_t uartPollTaskHandle;
 const osThreadAttr_t uartPollTask_attributes = {
   .name = "uartPollTask",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityLow7,
+  .stack_size = 512 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for rotationQueue */
+osMessageQueueId_t rotationQueueHandle;
+const osMessageQueueAttr_t rotationQueue_attributes = {
+  .name = "rotationQueue"
 };
 /* USER CODE BEGIN PV */
 #ifdef __GNUC__
@@ -105,6 +110,29 @@ double targetRotation = 0.;
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+void servoOneStep()
+{
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_13, GPIO_PIN_SET);
+  osDelay(1);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_13, GPIO_PIN_RESET);
+  osDelay(1);
+}
+
+void servoSetClockwiseDirection()
+{
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_14, GPIO_PIN_RESET);
+}
+
+void servoSetCounterClockwiseDirection()
+{
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_14, GPIO_PIN_SET);
+}
+
+void servoReverseDirection()
+{
+	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_14);
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -141,9 +169,6 @@ int main(void)
 
   HAL_Delay(1000);
 
-  // Set DIRECTION of a servo motor
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_14, GPIO_PIN_SET);
-
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -160,6 +185,10 @@ int main(void)
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
+
+  /* Create the queue(s) */
+  /* creation of rotationQueue */
+  rotationQueueHandle = osMessageQueueNew (100, sizeof(double), &rotationQueue_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
@@ -189,6 +218,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
 
   }
@@ -355,23 +385,62 @@ static void MX_GPIO_Init(void)
 void StartServoControl(void *argument)
 {
   /* USER CODE BEGIN 5 */
+	double currentRotation = 0.0;
+	double newRotation = 0.0;
+	double stepsToTake = 0;
+	uint16_t i = 0;
+	// TODO: refactor the code
+#define CLOCKWISE_DIRECTION (1)
+#define COUNTERCLOCKWISE_DIRECTION (-1)
+#define STEP_SIZE_IN_DEGREES (1.8)
+#define MIN_DEGREES (0.0)
+#define MAX_DEGREES (360.0)
+#define	max(a, b) (((a) >= (b)) ? (a) : (b))
+#define min(a, b) (((a) <= (b)) ? (a) : (b))
+
   /* Infinite loop */
   for(;;)
   {
-	  flagsX = osThreadFlagsWait(0xFF, osFlagsWaitAny, osWaitForever);
-	  printf ("%f\r\n", targetRotation);
+//	  //osThreadFlagsWait(0xFF, osFlagsWaitAny, osWaitForever);
+//	  //printf ("%f\r\n", targetRotation);
+	  // TODO: use the newest element in queue
+	  // probably won't need queue only one variable to store the latest received element
+	  // can use threadflags
+	  osMessageQueueGet(rotationQueueHandle, &newRotation, NULL, osWaitForever);
 
-	  // TODO
-	  // Set servo degrees according to what is received
+	  stepsToTake = (double)(newRotation - currentRotation) / (double)1.800;
+	  if (stepsToTake < 0.0)
+		  stepsToTake = -stepsToTake;
 
-	 // int i = 0;
-//	  for (i = 0; i < 100; i++)
-//	  {
-//		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_13, GPIO_PIN_SET);
-//		  HAL_Delay(20);
-//		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_13, GPIO_PIN_RESET);
-//		  HAL_Delay(20);
-//	  }
+	  if (stepsToTake > (MAX_DEGREES / STEP_SIZE_IN_DEGREES) / 2)
+	  {
+		  stepsToTake = (MAX_DEGREES / STEP_SIZE_IN_DEGREES) - stepsToTake;
+		  if (newRotation > currentRotation)
+		  {
+			  servoSetCounterClockwiseDirection();
+		  }
+		  else
+		  {
+			  servoSetClockwiseDirection();
+		  }
+	  }
+	  else if (newRotation < currentRotation)
+	  {
+		  servoSetCounterClockwiseDirection();
+	  }
+	  else
+	  {
+		  servoSetClockwiseDirection();
+	  }
+
+	  for (i = 0; i < stepsToTake; i++)
+	  {
+		  servoOneStep();
+	  }
+
+	  printf("%f %f %f\r\n", currentRotation, newRotation, stepsToTake);
+
+	  currentRotation = newRotation;
   }
   /* USER CODE END 5 */
 }
@@ -387,13 +456,18 @@ void StartUartPoll(void *argument)
 {
   /* USER CODE BEGIN StartUartPoll */
 	uint16_t rxLen;
+	osStatus_t status;
   /* Infinite loop */
   for(;;)
   {
-	  //__HAL_UART_CLEAR_OREFLAG(&huart6);
 	  HAL_UARTEx_ReceiveToIdle(&huart6, rxDataFromBt, 8, &rxLen, 0xFFFFFFFF);
 	  targetRotation = atof(rxDataFromBt);
-	  flags = osThreadFlagsSet(servoControlTaskHandle, 0xFF);
+	  printf ("%f\r\n", targetRotation);
+	  if ( (status = osMessageQueuePut(rotationQueueHandle, &targetRotation, 0U, 0U)) != osOK)
+	  {
+		  printf("status: %d\r\m", status);
+	  }
+	  //osThreadFlagsSet(servoControlTaskHandle, 0xFF);
   }
   /* USER CODE END StartUartPoll */
 }

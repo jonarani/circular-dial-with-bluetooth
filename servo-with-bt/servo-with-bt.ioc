@@ -1,9 +1,12 @@
 #MicroXplorer Configuration settings - do not modify
 FREERTOS.FootprintOK=true
-FREERTOS.IPParameters=Tasks01,FootprintOK,configMAX_TASK_NAME_LEN,configTICK_RATE_HZ
-FREERTOS.Tasks01=servoControlTask,24,128,StartServoControl,Default,NULL,Dynamic,NULL,NULL;uartPollTask,15,128,StartUartPoll,Default,NULL,Dynamic,NULL,NULL
+FREERTOS.HEAP_NUMBER=5
+FREERTOS.IPParameters=Tasks01,FootprintOK,configMAX_TASK_NAME_LEN,configTICK_RATE_HZ,Queues01,HEAP_NUMBER,configMINIMAL_STACK_SIZE
+FREERTOS.Queues01=rotationQueue,100,double,0,Dynamic,NULL,NULL
+FREERTOS.Tasks01=servoControlTask,24,512,StartServoControl,Default,NULL,Dynamic,NULL,NULL;uartPollTask,24,512,StartUartPoll,Default,NULL,Dynamic,NULL,NULL
 FREERTOS.configMAX_TASK_NAME_LEN=32
-FREERTOS.configTICK_RATE_HZ=100
+FREERTOS.configMINIMAL_STACK_SIZE=512
+FREERTOS.configTICK_RATE_HZ=1000
 File.Version=6
 GPIO.groupedBy=Group By Peripherals
 KeepUserPlacement=false
