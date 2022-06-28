@@ -108,3 +108,8 @@ compile_commands.json
 
 # Libraries
 /lib
+
+bin/
+obj/
+Debug/
+Release/
