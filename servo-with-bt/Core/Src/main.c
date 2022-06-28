@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -38,7 +39,13 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+#define CLOCKWISE_DIRECTION (1)
+#define COUNTERCLOCKWISE_DIRECTION (-1)
+#define STEP_SIZE_IN_DEGREES (1.8)
+#define MIN_DEGREES (0.0)
+#define MAX_DEGREES (360.0)
+#define	max(a, b) (((a) >= (b)) ? (a) : (b))
+#define min(a, b) (((a) <= (b)) ? (a) : (b))
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -109,7 +116,6 @@ double targetRotation = 0.;
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
 void servoOneStep()
 {
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_13, GPIO_PIN_SET);
@@ -387,30 +393,15 @@ void StartServoControl(void *argument)
   /* USER CODE BEGIN 5 */
 	double currentRotation = 0.0;
 	double newRotation = 0.0;
-	double stepsToTake = 0;
+	double stepsToTake = 0.0;
 	uint16_t i = 0;
-	// TODO: refactor the code
-#define CLOCKWISE_DIRECTION (1)
-#define COUNTERCLOCKWISE_DIRECTION (-1)
-#define STEP_SIZE_IN_DEGREES (1.8)
-#define MIN_DEGREES (0.0)
-#define MAX_DEGREES (360.0)
-#define	max(a, b) (((a) >= (b)) ? (a) : (b))
-#define min(a, b) (((a) <= (b)) ? (a) : (b))
 
   /* Infinite loop */
   for(;;)
   {
-//	  //osThreadFlagsWait(0xFF, osFlagsWaitAny, osWaitForever);
-//	  //printf ("%f\r\n", targetRotation);
-	  // TODO: use the newest element in queue
-	  // probably won't need queue only one variable to store the latest received element
-	  // can use threadflags
 	  osMessageQueueGet(rotationQueueHandle, &newRotation, NULL, osWaitForever);
 
-	  stepsToTake = (double)(newRotation - currentRotation) / (double)1.800;
-	  if (stepsToTake < 0.0)
-		  stepsToTake = -stepsToTake;
+	  stepsToTake = fabs((double)(newRotation - currentRotation) / (double)1.800);
 
 	  if (stepsToTake > (MAX_DEGREES / STEP_SIZE_IN_DEGREES) / 2)
 	  {
@@ -458,17 +449,16 @@ void StartUartPoll(void *argument)
 	uint16_t rxLen;
 	osStatus_t status;
   /* Infinite loop */
-  for(;;)
-  {
-	  HAL_UARTEx_ReceiveToIdle(&huart6, rxDataFromBt, 8, &rxLen, 0xFFFFFFFF);
-	  targetRotation = atof(rxDataFromBt);
-	  printf ("%f\r\n", targetRotation);
-	  if ( (status = osMessageQueuePut(rotationQueueHandle, &targetRotation, 0U, 0U)) != osOK)
-	  {
-		  printf("status: %d\r\m", status);
-	  }
-	  //osThreadFlagsSet(servoControlTaskHandle, 0xFF);
-  }
+	for(;;)
+	{
+		HAL_UARTEx_ReceiveToIdle(&huart6, rxDataFromBt, 8, &rxLen, 0xFFFFFFFF);
+		targetRotation = atof(rxDataFromBt);
+		printf ("%f\r\n", targetRotation);
+		if ( (status = osMessageQueuePut(rotationQueueHandle, &targetRotation, 0U, 0U)) != osOK)
+		{
+		  printf("status: %d\r\n", status);
+		}
+	}
   /* USER CODE END StartUartPoll */
 }
 
