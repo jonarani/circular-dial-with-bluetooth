@@ -101,19 +101,12 @@ Item {
             onPositionChanged: {
                 // Rotate in increments of <snap> degrees. Modulo 360 to keep rotation [0; 360).
                 parent.rotation = (parseInt((parent.rotation - degrees) / snap) * snap) % 360
-                //console.log (parent.rotation)
 
                 if (prevRotation != parent.rotation)
                 {
                     prevRotation = parent.rotation;
                     dial.arrowRotationChanged(parent.rotation);
                 }
-
-                // TODO: create an arrow that keeps track of
-                //       degrees sent from MCU.
-                // Define a new Q_PROPERTY in bthandler
-                // Received degrees will use WRITE.
-                // In QML use READ.
             }
         }
     }

@@ -22,7 +22,6 @@ BtHandler::BtHandler(QObject *parent)
     m_timer.setInterval(50);
 
     connect(&m_timer, &QTimer::timeout, this, &BtHandler::sendMessage);
-    //m_timer.start();
 }
 
 void BtHandler::searchBtDevices()
@@ -147,26 +146,6 @@ void BtHandler::socketErrorOccurred(QBluetoothSocket::SocketError error)
 {
     setState(ERROR_OCCURED);
     qDebug() << "Socket error: " << error;
-}
-
-void BtHandler::test_sendData()
-{
-    if (!m_rotations.empty())
-    {
-        if (m_state == CONNECTED)
-        {
-            qreal rotation = m_rotations.last();
-            QString msg = QString::number(rotation, 'f', 1);
-            qDebug() << "Sending: " << msg;
-            QByteArray text = msg.toUtf8() + '\0' + '\r' + '\n';
-            m_socket->write(text);
-            m_rotations.clear();
-        }
-    }
-    else if (m_timer.isActive())
-    {
-        m_timer.stop();
-    }
 }
 
 bool BtHandler::isSearchFinished() const

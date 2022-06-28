@@ -56,9 +56,6 @@ private slots:
     void socketErrorOccurred(QBluetoothSocket::SocketError error);
     void sendMessage();
 
-    // For testing
-    void test_sendData();
-
 private:
     QBluetoothDeviceDiscoveryAgent *m_discoveryAgent = nullptr;
     QBluetoothSocket *m_socket = nullptr;
@@ -69,11 +66,7 @@ private:
 
     QVector<qreal> m_rotations;
 
-    // For testing
     QTimer m_timer;
-
-    // For testing
-    bool sendReady = false;
 };
 
 #endif // BTHANDLER_H

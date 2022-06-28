@@ -8,5 +8,7 @@
         <file>UI/images/knob.png</file>
         <file>UI/images/mainBack.png</file>
         <file>UI/images/mainFront.png</file>
+        <file>UI/BtButtons.qml</file>
+        <file>UI/BtDevicesList.qml</file>
     </qresource>
 </RCC>
