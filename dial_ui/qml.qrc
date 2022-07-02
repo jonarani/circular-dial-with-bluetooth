@@ -10,5 +10,6 @@
         <file>UI/images/mainFront.png</file>
         <file>UI/BtButtons.qml</file>
         <file>UI/BtDevicesList.qml</file>
+        <file>UI/ServoControl.qml</file>
     </qresource>
 </RCC>

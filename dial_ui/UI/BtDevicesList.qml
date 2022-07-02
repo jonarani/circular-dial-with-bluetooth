@@ -13,10 +13,6 @@ ListView {
     clip: true
     focus: true
 
-    Layout.fillWidth: true
-    Layout.fillHeight: true
-    Layout.alignment: Qt.AlignTop
-
     model: BtDeviceModel {
         id: btDeviceModel
         list: _deviceList
@@ -36,6 +32,7 @@ ListView {
     }
 
     delegate: Rectangle {
+        id: rect
         readonly property ListView __lv: ListView.view
         color: "lightblue"
         implicitHeight: txt1.implicitHeight

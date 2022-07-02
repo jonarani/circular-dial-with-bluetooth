@@ -8,7 +8,7 @@ Item {
     property int main_back_width: main_back.width * _scale
     property int main_back_height: main_back.height * _scale
 
-    property real rotation: arrow.rotation // TODO: alias?
+    property alias rotation: arrow.rotation // TODO: alias?
     property real prevRotation: 0.0;
 
     property string imagesPath: "qrc:/UI/images/"

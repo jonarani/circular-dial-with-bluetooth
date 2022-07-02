@@ -6,8 +6,16 @@ import BtDevice 1.0
 import BtHandlerData 1.0
 
 RowLayout {
+    id: buttonRow
+
+    property alias buttonRow: buttonRow
+
+    implicitHeight: searchButton.height
+
+
     Button {
         id: searchButton
+
         Layout.fillWidth: true
 
         text: "Search devices"
@@ -48,6 +56,20 @@ RowLayout {
 
         onClicked: {
             _btHandler.disconnect();
+        }
+    }
+
+    Button {
+        id: servoControlButton
+        Layout.fillWidth: true
+
+        text: "Go To Servo Control"
+
+
+        onClicked: {
+            btDevices.visible = false
+            btButtons.visible = false
+            servoControl.visible = true
         }
     }
 }

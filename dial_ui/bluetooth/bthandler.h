@@ -31,6 +31,7 @@ public:
     Q_INVOKABLE void connectToDevice(const QString &deviceAddress);
     Q_INVOKABLE void addToQueue(qreal rotation);
     Q_INVOKABLE void disconnect();
+    Q_INVOKABLE void sendConfig(QString stepSize, QString stepSpeed, bool isAutomatic, qreal scannableArea);
 
     bool isSearchFinished() const;
     void setIsSearchFinished(bool newIsSearchFinished);

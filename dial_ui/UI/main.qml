@@ -30,25 +30,30 @@ Window {
 
         BtButtons {
             id: btButtons
-        }
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignTop
 
-        // TODO: Add StackView
-        // 1st screen - listview
-        // 2nd screen - servo motor params (actual degrees)
-        //              configure steps size - 0.45 0.9 and 1.8 degrees
-        //              automatic mode and manual mode config
-        //              automatic mode scans configured area (for example 180 degrees)
-        //              goes to and back 180 degrees
-        //              can set the step speed
-        // OR just use visibility to change from ListView to ServoMotorData screen or whatever
-        // When connected show Servo Control instead of list view
-        // if disconnected then show listview
+            visible: true
+        }
 
         BtDevicesList {
             id: btDevices
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+
+            visible: true
         }
 
+        ServoControl {
+            id: servoControl
 
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            //Layout.alignment: Qt.AlignTop
+
+            visible: false
+        }
     }
 }
 

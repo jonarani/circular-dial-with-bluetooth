@@ -118,6 +118,39 @@ void BtHandler::disconnect()
     }
 }
 
+void BtHandler::sendConfig(QString stepSize, QString stepSpeed, bool isAutomatic, qreal scannableArea)
+{
+    QString configMsg;
+
+    // startBytes 1, stepSize 4, stepSpeed 3, isAutomatic 1, scannableArea 6, CR 1, LF 1
+    configMsg.reserve(1 + 4 + 3 + 1 + 6 + 2);
+
+    configMsg.append(configMsg.fromUtf8(QByteArray(1, 0x7F)));
+
+    configMsg.append(stepSize.leftJustified(4, '0'));
+
+    configMsg.append(stepSpeed.rightJustified(3, '0'));
+
+    configMsg.append(isAutomatic ? "1" : "0");
+
+    configMsg.append(QString::number(scannableArea, 'f', 2).leftJustified(6, '0'));
+
+    QByteArray configData = configMsg.toUtf8() + '\r' + '\n';
+
+    if (m_state == CONNECTED)
+    {
+
+        m_socket->write(configData);
+
+        qDebug() << configMsg;
+    }
+    else
+    {
+        qDebug() << "Not connected, but: " << configMsg;
+    }
+    qDebug() << "configMsg len: " << configMsg.length();
+}
+
 void BtHandler::readSocket()
 {
     if (m_socket == nullptr)
@@ -126,7 +159,7 @@ void BtHandler::readSocket()
     // Received data must be terminated with \r\n
     while (m_socket->canReadLine()) {
         QByteArray line = m_socket->readLine();
-        qDebug() << line;
+        qDebug() << "Received " << line;
     }
 }
 
