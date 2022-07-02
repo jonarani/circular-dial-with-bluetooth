@@ -23,9 +23,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <math.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -39,13 +36,6 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-#define CLOCKWISE_DIRECTION (1)
-#define COUNTERCLOCKWISE_DIRECTION (-1)
-#define STEP_SIZE_IN_DEGREES (1.8)
-#define MIN_DEGREES (0.0)
-#define MAX_DEGREES (360.0)
-#define	max(a, b) (((a) >= (b)) ? (a) : (b))
-#define min(a, b) (((a) <= (b)) ? (a) : (b))
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -63,6 +53,13 @@ const osThreadAttr_t servoControlTask_attributes = {
 osThreadId_t uartPollTaskHandle;
 const osThreadAttr_t uartPollTask_attributes = {
   .name = "uartPollTask",
+  .stack_size = 512 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for uartSendTask */
+osThreadId_t uartSendTaskHandle;
+const osThreadAttr_t uartSendTask_attributes = {
+  .name = "uartSendTask",
   .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
@@ -106,11 +103,17 @@ static void MX_USART6_UART_Init(void);
 static void MX_USART2_UART_Init(void);
 void StartServoControl(void *argument);
 void StartUartPoll(void *argument);
+void StartUartSend(void *argument);
 
 /* USER CODE BEGIN PFP */
 
 uint8_t rxDataFromBt[50] = {0};
 double targetRotation = 0.;
+
+double stepSize = 1.8; // 0.45, 0.9 and 1.8 possible step sizes
+uint16_t stepSpeed = 1; // how much delay between low and high voltages in servo motor
+bool automaticControlEnabled = false; // if enabled then cant control manually, automatically scans configured area
+double areaToScan = 180.0; // goes from 0 to 180 degrees continously
 
 /* USER CODE END PFP */
 
@@ -206,6 +209,9 @@ int main(void)
 
   /* creation of uartPollTask */
   uartPollTaskHandle = osThreadNew(StartUartPoll, NULL, &uartPollTask_attributes);
+
+  /* creation of uartSendTask */
+  uartSendTaskHandle = osThreadNew(StartUartSend, NULL, &uartSendTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -388,50 +394,13 @@ static void MX_GPIO_Init(void)
   * @retval None
   */
 /* USER CODE END Header_StartServoControl */
-void StartServoControl(void *argument)
+__weak void StartServoControl(void *argument)
 {
   /* USER CODE BEGIN 5 */
-	double currentRotation = 0.0;
-	double newRotation = 0.0;
-	double stepsToTake = 0.0;
-	uint16_t i = 0;
-
   /* Infinite loop */
   for(;;)
   {
-	  osMessageQueueGet(rotationQueueHandle, &newRotation, NULL, osWaitForever);
-
-	  stepsToTake = fabs((double)(newRotation - currentRotation) / (double)1.800);
-
-	  if (stepsToTake > (MAX_DEGREES / STEP_SIZE_IN_DEGREES) / 2)
-	  {
-		  stepsToTake = (MAX_DEGREES / STEP_SIZE_IN_DEGREES) - stepsToTake;
-		  if (newRotation > currentRotation)
-		  {
-			  servoSetCounterClockwiseDirection();
-		  }
-		  else
-		  {
-			  servoSetClockwiseDirection();
-		  }
-	  }
-	  else if (newRotation < currentRotation)
-	  {
-		  servoSetCounterClockwiseDirection();
-	  }
-	  else
-	  {
-		  servoSetClockwiseDirection();
-	  }
-
-	  for (i = 0; i < stepsToTake; i++)
-	  {
-		  servoOneStep();
-	  }
-
-	  printf("%f %f %f\r\n", currentRotation, newRotation, stepsToTake);
-
-	  currentRotation = newRotation;
+    osDelay(1);
   }
   /* USER CODE END 5 */
 }
@@ -443,23 +412,33 @@ void StartServoControl(void *argument)
 * @retval None
 */
 /* USER CODE END Header_StartUartPoll */
-void StartUartPoll(void *argument)
+__weak void StartUartPoll(void *argument)
 {
   /* USER CODE BEGIN StartUartPoll */
-	uint16_t rxLen;
-	osStatus_t status;
   /* Infinite loop */
 	for(;;)
 	{
-		HAL_UARTEx_ReceiveToIdle(&huart6, rxDataFromBt, 8, &rxLen, 0xFFFFFFFF);
-		targetRotation = atof(rxDataFromBt);
-		printf ("%f\r\n", targetRotation);
-		if ( (status = osMessageQueuePut(rotationQueueHandle, &targetRotation, 0U, 0U)) != osOK)
-		{
-		  printf("status: %d\r\n", status);
-		}
+	  osDelay(1);
 	}
   /* USER CODE END StartUartPoll */
+}
+
+/* USER CODE BEGIN Header_StartUartSend */
+/**
+* @brief Function implementing the uartSendTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartUartSend */
+__weak void StartUartSend(void *argument)
+{
+  /* USER CODE BEGIN StartUartSend */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartUartSend */
 }
 
 /**

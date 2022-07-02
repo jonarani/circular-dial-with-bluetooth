@@ -31,7 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -41,6 +41,20 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
+extern uint8_t rxDataFromBt[50];
+extern double targetRotation;
+
+// 0.45, 0.9 and 1.8 possible step sizes
+extern double stepSize;
+
+// how much delay between low and high voltages in servo motor
+extern uint16_t stepSpeed;
+
+// if enabled then cant control manually, automatically scans configured area
+extern bool automaticControlEnabled;
+
+// goes from 0 to 180 degrees continously
+extern double areaToScan;
 
 /* USER CODE END EC */
 
@@ -52,7 +66,11 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+void processConfigData(uint8_t *data, uint8_t size);
+void servoOneStep();
+void servoSetClockwiseDirection();
+void servoSetCounterClockwiseDirection();
+void servoReverseDirection();
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
@@ -61,6 +79,14 @@ void Error_Handler(void);
 #define Direction_Pin GPIO_PIN_14
 #define Direction_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */
+
+#define CLOCKWISE_DIRECTION (1)
+#define COUNTERCLOCKWISE_DIRECTION (-1)
+#define STEP_SIZE_IN_DEGREES (1.8)
+#define MIN_DEGREES (0.0)
+#define MAX_DEGREES (360.0)
+#define	max(a, b) (((a) >= (b)) ? (a) : (b))
+#define min(a, b) (((a) <= (b)) ? (a) : (b))
 
 /* USER CODE END Private defines */
 
