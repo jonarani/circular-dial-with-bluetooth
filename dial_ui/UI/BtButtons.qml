@@ -70,6 +70,7 @@ RowLayout {
             btDevices.visible = false
             btButtons.visible = false
             servoControl.visible = true
+            scrollView.visible = false
         }
     }
 }

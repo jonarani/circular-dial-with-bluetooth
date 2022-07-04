@@ -325,7 +325,8 @@ void StartUartPoll(void *argument)
 				// Process already queued elements
 				while (osMessageQueueGetCount(rotationQueueHandle) != 0)
 				{
-					osThreadYield();
+					printf ("Waiting for Servo finished...\r\n");
+					osDelay(10);
 				}
 			}
 			else
@@ -334,7 +335,11 @@ void StartUartPoll(void *argument)
 			}
 
 			osDelay(5);
-			while (servoState != SERVO_STATE_IDLE) {}
+			while (servoState != SERVO_STATE_IDLE)
+			{
+				printf ("Waiting for Servo Idle...\r\n");
+				osDelay(10);
+			}
 
 			// Set new params
 			processAndSetServoParams(&rxDataFromBt[1], rxLen - 1 - 2);

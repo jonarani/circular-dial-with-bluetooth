@@ -158,10 +158,13 @@ void BtHandler::readSocket()
     if (m_socket == nullptr)
         return;
 
+    QString data;
     // Received data must be terminated with \r\n
     while (m_socket->canReadLine()) {
         QByteArray line = m_socket->readLine();
         qDebug() << "Received " << line;
+        data = QString::fromStdString(line.toStdString());
+        emit dataReceivedViaBt(data);
     }
 }
 

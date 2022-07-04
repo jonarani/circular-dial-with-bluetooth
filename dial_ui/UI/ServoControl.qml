@@ -35,6 +35,7 @@ ColumnLayout {
                 servoControl.visible = false
                 btButtons.visible = true
                 btDevices.visible = true
+                scrollView.visible = true
             }
 
             font.family: "Times New Roman"
@@ -174,7 +175,6 @@ ColumnLayout {
                 dial.enabled = true
         }
     }
-
 
     Item {
         Layout.fillHeight: true

@@ -46,6 +46,8 @@ signals:
 
     void stateChanged();
 
+    void dataReceivedViaBt(QString data);
+
 public slots:
     void newDeviceFound(const QBluetoothDeviceInfo &device);
     void searchFinished();

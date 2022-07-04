@@ -12,6 +12,13 @@ Window {
     height: 800
     visible: true
 
+    Connections {
+        target: _btHandler
+        function onDataReceivedViaBt(data) {
+            textArea.text = textArea.text + "Received data from BT: " + data
+        }
+    }
+
     ColumnLayout {
         id: mainLayout
         anchors.fill: parent
@@ -39,10 +46,25 @@ Window {
 
         BtDevicesList {
             id: btDevices
-            Layout.fillHeight: true
+            //Layout.fillHeight: true
+            height: 100
             Layout.fillWidth: true
-
             visible: true
+        }
+
+        ScrollView {
+            id: scrollView
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+
+            TextArea {
+                id: textArea
+                readOnly: true
+                font.family: "Courier"
+                font.pixelSize: 12
+
+                text: ""
+            }
         }
 
         ServoControl {
