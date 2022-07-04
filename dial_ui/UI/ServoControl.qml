@@ -56,6 +56,8 @@ ColumnLayout {
                 scannableAreaSpinBox.value = 0
             }
 
+            currentIndex: 2
+
             font.family: "Times New Roman"
             font.pixelSize: 14
         }
@@ -163,9 +165,13 @@ ColumnLayout {
             _btHandler.sendConfig(stepSizeComboBox.currentValue, stepSpeedComboBox.currentValue,
                                   autoControlCheckBox.checked, scannableAreaSpinBox.realValue)
 
-            // Disable until response is received from MCU.
-            //dial.enabled = false
             dial.rotation = 0.0
+            dial.arrow_area.snap = stepSizeComboBox.currentValue
+
+            if (autoControlCheckBox.checked)
+                dial.enabled = false
+            else
+                dial.enabled = true
         }
     }
 
@@ -174,17 +180,4 @@ ColumnLayout {
         Layout.fillHeight: true
     }
 }
-
-// Input box that allows to configure 0.45 0.9 and 1.8
-
-// Checkbox for Automatic control or manual ServoControl
-// automatic control means that servo turns itself 360deg at some set speed
-// manual is when changing the dial
-
-// for automatic mode is is necessary that the arrow.rotation is aliased?
-// MCU should then send degrees to the app and arrow is not movable by user
-
-// Input box for step speed. 1ms up to 1000ms?
-
-// Send button to send info to the MCU
 

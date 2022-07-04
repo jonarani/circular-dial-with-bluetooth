@@ -8,7 +8,12 @@ Item {
     property int main_back_width: main_back.width * _scale
     property int main_back_height: main_back.height * _scale
 
-    property alias rotation: arrow.rotation // TODO: alias?
+    // The purpose of snap is that arrow could be moved in increments of 1.8 degrees.
+    // Servo motor one full step is 1.8 degrees
+    // The motor has half step and quarter step possibilities
+    property alias arrow_area: arrow_area
+
+    property alias rotation: arrow.rotation
     property real prevRotation: 0.0;
 
     property string imagesPath: "qrc:/UI/images/"
@@ -80,11 +85,6 @@ Item {
             id: arrow_area
             anchors.fill: parent
 
-            // The purpose of snap is that arrow could be moved in increments of 1.8 degrees.
-            // Servo motor one full step is 1.8 degrees
-            // The motor has half step and quarter step possibilities
-            // TODO: make this configurable
-            //       possible options: 0.45, 0.9, 1.8 and 3.6?
             property real snap: 1.8
 
             // https://stackoverflow.com/questions/2676719/calculating-the-angle-between-a-line-and-the-x-axis

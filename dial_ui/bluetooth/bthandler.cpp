@@ -95,6 +95,8 @@ void BtHandler::sendMessage()
         if (m_state == CONNECTED)
         {
             qreal rotation = m_rotations.last();
+            // Precision should be 2 if step size is 0.45, but then
+            // some bug appears. MCU doesn't receive data correctly sometimes.
             QString msg = QString::number(rotation, 'f', 1);
             qDebug() << "Sending: " << msg;
             QByteArray text = msg.toUtf8() + '\0' + '\r' + '\n';
