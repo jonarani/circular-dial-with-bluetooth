@@ -41,21 +41,6 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-extern uint8_t rxDataFromBt[50];
-extern double targetRotation;
-
-// 0.45, 0.9 and 1.8 possible step sizes
-extern double stepSize;
-
-// how much delay between low and high voltages in servo motor
-extern uint16_t stepSpeed;
-
-// if enabled then cant control manually, automatically scans configured area
-extern bool automaticControlEnabled;
-
-// goes from 0 to 180 degrees continously
-extern double areaToScan;
-
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
@@ -66,14 +51,15 @@ extern double areaToScan;
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-void processConfigData(uint8_t *data, uint8_t size);
-void servoOneStep();
-void servoSetClockwiseDirection();
-void servoSetCounterClockwiseDirection();
-void servoReverseDirection();
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define MS1_Pin GPIO_PIN_13
+#define MS1_GPIO_Port GPIOB
+#define MS2_Pin GPIO_PIN_14
+#define MS2_GPIO_Port GPIOB
+#define MS3_Pin GPIO_PIN_15
+#define MS3_GPIO_Port GPIOB
 #define Step_Pin GPIO_PIN_13
 #define Step_GPIO_Port GPIOA
 #define Direction_Pin GPIO_PIN_14

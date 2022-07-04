@@ -63,6 +63,13 @@ const osThreadAttr_t uartSendTask_attributes = {
   .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for servoAutoControl */
+osThreadId_t servoAutoControlHandle;
+const osThreadAttr_t servoAutoControl_attributes = {
+  .name = "servoAutoControl",
+  .stack_size = 512 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 /* Definitions for rotationQueue */
 osMessageQueueId_t rotationQueueHandle;
 const osMessageQueueAttr_t rotationQueue_attributes = {
@@ -104,43 +111,14 @@ static void MX_USART2_UART_Init(void);
 void StartServoControl(void *argument);
 void StartUartPoll(void *argument);
 void StartUartSend(void *argument);
+void StartServoAutoControl(void *argument);
 
 /* USER CODE BEGIN PFP */
-
-uint8_t rxDataFromBt[50] = {0};
-double targetRotation = 0.;
-
-double stepSize = 1.8; // 0.45, 0.9 and 1.8 possible step sizes
-uint16_t stepSpeed = 1; // how much delay between low and high voltages in servo motor
-bool automaticControlEnabled = false; // if enabled then cant control manually, automatically scans configured area
-double areaToScan = 180.0; // goes from 0 to 180 degrees continously
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void servoOneStep()
-{
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_13, GPIO_PIN_SET);
-  osDelay(1);
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_13, GPIO_PIN_RESET);
-  osDelay(1);
-}
-
-void servoSetClockwiseDirection()
-{
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_14, GPIO_PIN_RESET);
-}
-
-void servoSetCounterClockwiseDirection()
-{
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_14, GPIO_PIN_SET);
-}
-
-void servoReverseDirection()
-{
-	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_14);
-}
 
 /* USER CODE END 0 */
 
@@ -197,7 +175,7 @@ int main(void)
 
   /* Create the queue(s) */
   /* creation of rotationQueue */
-  rotationQueueHandle = osMessageQueueNew (100, sizeof(double), &rotationQueue_attributes);
+  rotationQueueHandle = osMessageQueueNew (360, sizeof(double), &rotationQueue_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
@@ -212,6 +190,9 @@ int main(void)
 
   /* creation of uartSendTask */
   uartSendTaskHandle = osThreadNew(StartUartSend, NULL, &uartSendTask_attributes);
+
+  /* creation of servoAutoControl */
+  servoAutoControlHandle = osThreadNew(StartServoAutoControl, NULL, &servoAutoControl_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -369,10 +350,21 @@ static void MX_GPIO_Init(void)
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, MS1_Pin|MS2_Pin|MS3_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, Step_Pin|Direction_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : MS1_Pin MS2_Pin MS3_Pin */
+  GPIO_InitStruct.Pin = MS1_Pin|MS2_Pin|MS3_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pins : Step_Pin Direction_Pin */
   GPIO_InitStruct.Pin = Step_Pin|Direction_Pin;
@@ -439,6 +431,24 @@ __weak void StartUartSend(void *argument)
     osDelay(1);
   }
   /* USER CODE END StartUartSend */
+}
+
+/* USER CODE BEGIN Header_StartServoAutoControl */
+/**
+* @brief Function implementing the servoAutoControl thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartServoAutoControl */
+__weak void StartServoAutoControl(void *argument)
+{
+  /* USER CODE BEGIN StartServoAutoControl */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartServoAutoControl */
 }
 
 /**
